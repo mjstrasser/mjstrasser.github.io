@@ -2,7 +2,6 @@
 #
 # Use of `relative_permalinks` ensures post links from the index work properly.
 permalink:           /:year/:month/:title/
-relative_permalinks: true
 
 # Setup
 title:               Relatively Ignorant
@@ -30,4 +29,4 @@ plugins:
 # Custom vars
 version:             2.0.0
 github:
-  repo:              https://github.com/poole/poole
+  repo:              https://github.com/mjstrasser/mjstrasser.github.io
