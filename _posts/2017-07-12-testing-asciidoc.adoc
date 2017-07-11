@@ -1,6 +1,7 @@
 = Sample Page
 :page-layout: blog
 :uri-asciidoctor: http://asciidoctor.org
+:categories: test
 
 This is a sample page composed in AsciiDoc.
 Jekyll converts it to HTML using {uri-asciidoctor}[Asciidoctor].
