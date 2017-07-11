@@ -25,6 +25,7 @@ plugins:
   - jekyll-sitemap
   - jekyll-redirect-from
   - jekyll-paginate
+  - jekyll-asciidoc
 
 # Custom vars
 version:             2.0.0
