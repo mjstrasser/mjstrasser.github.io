@@ -7,7 +7,7 @@ permalink:           /:year/:month/:title/
 title:               Relatively Ignorant
 description:         'A blog on things about which I may or may not know things'
 paginate:            5
-baseurl:             'https://mjstrasser.github.io/'
+# baseurl:             'https://mjstrasser.github.io/'
 
 # Assets
 #
