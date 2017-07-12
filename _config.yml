@@ -16,3 +16,6 @@ plugins:
   - jekyll-paginate
 
 version:             2.0
+
+github:
+  repo: https://github.com/mjstrasser/mjstrasser.github.io
