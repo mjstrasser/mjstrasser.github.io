@@ -1,0 +1,30 @@
+---
+layout: page
+title: Categories
+---
+
+<div class="posts">
+  <div class="categories-list">
+    {% for cat in site.categories %}
+    <a href="#{{ cat[0] | slugify }}" class="post-category">{{ cat[0] }}</a>
+    {% endfor %}
+  </div>
+  <hr/>
+  <div class="categories-section">
+    {% for cat in site.categories %}
+    <h2 id="{{ cat[0] | slugify }}">{{ cat[0] }}</h2>
+    <ul class="related-posts">
+      {% for post in cat[1] %}
+      <li>
+        <h3>
+          <a href="{{ site.baseurl }}{{ post.url }}">
+            {{ post.title }}
+            <small>{{ post.date | date_to_string }}</small>
+          </a>
+        </h3>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endfor %}
+  </div>
+</div>

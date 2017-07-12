@@ -1,0 +1,15 @@
+.categories-list {
+  font-family: "PT Sans", Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  color: #313131;
+  letter-spacing: -.025rem;
+  font-size: 100%
+}
+.post-category {
+  background-color: #EEEEEE;
+  padding: 0.2rem;
+  margin: 0.1rem;
+}
+.categories-section {
+
+}
