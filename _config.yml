@@ -6,20 +6,8 @@ paginate:            5
 
 exclude: [".gitignore", "CNAME", "README.md"]
 
-sass:
-  sass_dir:          _sass
-  style:            :compressed
-
 author:
   name:              Michael Strasser
   url:               https://michaelstrasser.com/
 
-plugins:
-  - jekyll-sitemap
-  - jekyll-redirect-from
-  - jekyll-paginate
-
-# Custom vars
 version:             2.0.0
-github:
-  repo:              https://github.com/mjstrasser/mjstrasser.github.io
