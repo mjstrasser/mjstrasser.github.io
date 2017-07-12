@@ -1,10 +1,8 @@
 ---
 layout: post
-title: Welcome (back) to the blog
+title: Welcome (back) to my relative ignorance
 categories: general
 ---
-
-## Welcome back to my relative ignorance
 
 I have resuscitated a blog after about 10 years’ absence. As in that previous
 life, it is called *Relatively Ignorant* and contains bits and pieces of things
