@@ -1,0 +1,12 @@
+{% comment %}
+Show an image with a caption.
+
+Parameters:
+- url: image URL
+- description: String to use as caption and alt text
+{% endcomment %}
+
+<figure class="image">
+    <img src="{{ include.url }}" alt="{{ include.description }}" class="img-responsive">
+    <figcaption class="img-caption">{{ include.description }}</figcaption>
+</figure>

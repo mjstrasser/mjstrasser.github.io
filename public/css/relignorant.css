@@ -27,6 +27,8 @@
 .post-article {
   margin-top: 1.0rem;
 }
-.categories-section {
-
+.img-caption {
+  text-align: center;
+  font-family: "PT Sans", Helvetica, Arial, sans-serif;
+  font-weight: bold;
 }
