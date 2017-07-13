@@ -2,6 +2,7 @@
 layout: post
 title: Welcome (back) to my relative ignorance
 categories: general
+tags: blog
 ---
 
 I have resuscitated a blog after about 10 years’ absence. As in that previous

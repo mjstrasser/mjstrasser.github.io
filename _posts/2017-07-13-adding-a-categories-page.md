@@ -2,6 +2,7 @@
 layout: post
 title: Adding a categories page to this blog
 categories: tech
+tags: blog
 ---
 
 I succeeded in adding a [Categories page]({{ site.baseurl }}{% link categories.html %}) to

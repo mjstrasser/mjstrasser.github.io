@@ -2,6 +2,7 @@
 layout: post
 title: Gradle build file organisation and reuse
 categories: tech
+tags: gradle spring-boot
 ---
 
 Some ideas on how to organise and reuse Gradle build files in a multi-project build.

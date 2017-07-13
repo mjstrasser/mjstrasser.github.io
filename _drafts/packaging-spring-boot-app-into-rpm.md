@@ -2,6 +2,7 @@
 layout: post
 title: Packaging a Spring Boot application into an RPM with Gradle
 categories: tech
+tags: spring-boot
 ---
 
 Some learnings from using the
