@@ -2,10 +2,10 @@
 layout: post
 title: Packaging a Spring Boot application into an RPM with Gradle
 categories: tech
-tags: spring-boot
+tags: spring-boot gradle
 ---
 
-Some learnings from using the
+Some things I learnt from using the
 [Gradle Linux Packaging Plugin](https://github.com/nebula-plugins/gradle-ospackage-plugin).
 
 Recently I was working with a client where we were developing new
@@ -20,3 +20,7 @@ I started with a Gradle configuration copied from somebody else’s project and
 cut it down as I figured out what worked an what didn’t, and what was actually
 needed.
 
+The [plugin
+documentation](https://github.com/nebula-plugins/gradle-ospackage-plugin/wiki)
+is not crystal clear about some things and I don’t pretend to understand
+all its features.
