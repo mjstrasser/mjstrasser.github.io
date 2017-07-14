@@ -44,9 +44,7 @@ Part of the rationale for using the trace ID is to reduce log message clutter.
 When Sleuth is included, the IDs are inserted into the Spring logs via
 the SLF4J MDC. Here is the start of a Spring Boot log message with Sleuth information:
 
-```text
-2017-07-14 13:32:59.094  INFO [api-service,92e9013d25cca084,92e9013d25cca084,false] [10.242.22.52] 25453 ---
-```
+    2017-07-14 13:32:59.094  INFO [api-service,92e9013d25cca084,92e9013d25cca084,false] [10.242.22.52] 25453 --- [nio-8080-exec-1] .n.c.s.d.i.c.InitialDiagnosticController : Received request
 
 * **api-service** is the application name
 * **92e9013d25cca084** is both trace ID and the span ID (this happens in the first span of a trace)
@@ -58,7 +56,7 @@ Getting the trace ID turned out to be very simple. We created a Spring service
 called `Breadcrumb` to return the formatted trace ID.
 
 ```java
-package com.example;
+package com.example.api.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -85,4 +83,70 @@ trace ID string.
 
 ## Inserting the Sleuth trace ID
 
-**TBC**
+When a consumer requests status of a workflow they provide the breadcrumb ID to use, e.g.:
+
+    GET /v1/workflow/92e9013d25cca084
+
+We want to set that value as the Sleuth trace ID.
+
+### Filter that injects the trace ID
+
+The solution we chose is to create a Spring web filter that addes a Sleuth span as an
+attribute of the HTTP request so the Sleuth `TraceFilter` behaves as if the request
+is part of an existing Sleuth trace. Our filter needs to:
+
+* be in the filter chain before `TraceFilter`
+* read the breadcrumb ID from the request
+* construct an appropriate `Span` object
+* add the span as an attribute of the request with the correct key
+
+Here is some code, abridged for clarity, with notes below:
+
+```java
+@Order(TraceFilter.ORDER - 1)
+public class InjectTraceFilter extends GenericFilterBean {
+
+    private static final Pattern REQUEST_PATTERN = Pattern.compile("^/v1/workflow/(?<crumbId>[0-9a-f]+)$");
+    private static final String TRACE_REQUEST_ATTR = TraceFilter.class.getName() + ".TRACE";
+    private static final String SPAN_NAME_BASE = "http:/v1/workflow/";
+
+    private final Random random = new Random(System.currentTimeMillis());
+
+    @Override
+    public void doFilter(final ServletRequest request, final ServletResponse response,
+                         final FilterChain chain) throws IOException, ServletException {
+        final HttpServletRequest httpRequest = (HttpServletRequest) request;
+        final String breadcrumbId = extractBreadcrumbId(httpRequest);
+        if (breadcrumbId != null) {
+            httpRequest.setAttribute(TRACE_REQUEST_ATTR, spanForId(breadcrumbId));
+            chain.doFilter(httpRequest, response);
+        } else {
+            chain.doFilter(request, response);
+        }
+    }
+
+    private Span spanForId(final String traceId) {
+        return Span.builder()
+                .traceId(Span.hexToId(traceId))
+                .spanId(random.nextLong())
+                .exportable(false)
+                .name(SPAN_NAME_BASE + traceId)
+                .build();
+    }
+
+    private String extractBreadcrumbId(final HttpServletRequest httpRequest) {
+        if ("GET".equals(httpRequest.getMethod())) {
+            final Matcher matcher = REQUEST_PATTERN.matcher(httpRequest.getRequestURI());
+            if (matcher.matches()) {
+                return matcher.group("crumbId");
+            }
+        }
+        return null;
+    }
+
+}
+```
+
+Notes:
+
+* The `extractBreadcrumId` method 
