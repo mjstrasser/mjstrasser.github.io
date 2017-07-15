@@ -37,3 +37,10 @@
   overflow: auto;
   font-size: 0.7rem;
 }
+code {
+  font-size: 80%;
+  padding: 0.25em;
+}
+#markdown-toc li {
+  font-family: "PT Sans", Helvetica, Arial, sans-serif;
+}

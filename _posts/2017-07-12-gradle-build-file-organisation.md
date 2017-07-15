@@ -7,6 +7,9 @@ tags: gradle spring-boot
 
 Some ideas on how to organise and reuse Gradle build files in a multi-project build.
 
+* TOC
+{:toc}
+
 ## Introduction
 
 Our project was to create a set of related microservices in Java using Spring Boot,
@@ -144,6 +147,6 @@ Here is a brief description of the reusable scripts that we created.
 We also used the [Gradle Release Plugin](https://github.com/researchgate/gradle-release)
 but I was not able (in the time available) to get it to work from
 an external script using `apply from`. This meant that each service build script contained the same big
-block of code (not shown here). 
+block of code (not shown here).
 
 Perhaps I will solve that one in the future.
