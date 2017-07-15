@@ -5,6 +5,9 @@ categories: tech
 tags: spring-boot spring-cloud
 ---
 
+One way to interact with Spring Cloud Sleuth in an API service that
+works with an asynchronous workflow.
+
 * TOC
 {:toc}
 
@@ -35,20 +38,22 @@ provides much more detail, including this useful diagram:
 
 ### Generating a unique ID for each workflow
 
-Instead of generating a new ID (e.g. a UUID) we decided to take the
+Instead of generating a new ID (such as a UUID) we decided to take the
 trace ID from Sleuth. Sleuth generates a random long integer as a trace
 ID at the beginning of the request and passes that as part of
-synchronous requests to other services. 
+synchronous requests to other services.
 
 Part of the rationale for using the trace ID is to reduce log message clutter.
 When Sleuth is included, the IDs are inserted into the Spring logs via
-the SLF4J MDC. Here is the start of a Spring Boot log message with Sleuth information:
+the SLF4J MDC. Here is a simple Spring Boot log message with information
+added by Sleuth:
 
     2017-07-14 13:32:59.094  INFO [api-service,92e9013d25cca084,92e9013d25cca084,false] [10.242.22.52] 25453 --- [nio-8080-exec-1] .n.c.s.d.i.c.InitialDiagnosticController : Received request
 
 * **api-service** is the application name
-* **92e9013d25cca084** is both trace ID and the span ID (this happens in the first span of a trace)
-* (I can’t remember what **false** means)
+* **92e9013d25cca084** is trace ID; it is also the span ID of the first span
+  of a trace (as here)
+* **false** means that the span is not exportable (***More details?***)
 
 ## Getting the Sleuth trace ID
 
@@ -77,7 +82,7 @@ public class Breadcrumb {
 `Span#traceIdString()` returns the trace ID
 in the same hexadecimal format used in the log messages.
 
-The controller that handles the HTTP POST to start the workflow injects
+The controller that handles the request to start the workflow injects
 this service and calls `breadcrumb.getBreadcrumb()` to get the current
 trace ID string.
 
@@ -93,14 +98,18 @@ We want to set that value as the Sleuth trace ID.
 
 The solution we chose is to create a Spring web filter that addes a Sleuth span as an
 attribute of the HTTP request so the Sleuth `TraceFilter` behaves as if the request
-is part of an existing Sleuth trace. Our filter needs to:
+is part of an existing Sleuth trace. Our filter:
 
-* be in the filter chain before `TraceFilter`
-* read the breadcrumb ID from the request
-* construct an appropriate `Span` object
-* add the span as an attribute of the request with the correct key
+* is in the filter chain before `TraceFilter`
+* reads the breadcrumb ID from the request
+* constructs an appropriate `Span` object
+* adds the span as an attribute of the request with the correct key
 
-Here is some code, abridged for clarity, with notes below:
+When `TraceFilter` executes it finds the span in the request attribute
+and uses it as if the service had been called by another one in the same
+trace.
+
+Here is the filter code, abridged for clarity, with notes below:
 
 ```java
 @Order(TraceFilter.ORDER - 1)
@@ -149,4 +158,12 @@ public class InjectTraceFilter extends GenericFilterBean {
 
 Notes:
 
-* The `extractBreadcrumId` method 
+* The filter inserts itself into the sequence ahead of `TraceFilter` using
+  `@Order`.
+* The `extractBreadcrumId` method only matches requests to a workflow status
+  request and returns the breadcrumb ID.
+* The `spanForId` method constructs new `Span` that joins the extracted
+  trace. This span mimics those created by `TraceFilter` (***???***) when
+  a request is made from another Sleuth-enabled service.
+* The span is set in the request with a specific key so it is picked up
+  by `TraceFilter`.
