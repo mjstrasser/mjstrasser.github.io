@@ -5,7 +5,7 @@ categories: tech
 tags: spring-boot spring-cloud
 ---
 
-One way to interact with Spring Cloud Sleuth in an API service that
+Here is a way to interact with Spring Cloud Sleuth in an API service that
 works with an asynchronous workflow.
 
 * TOC
@@ -36,24 +36,25 @@ provides much more detail, including this useful diagram:
    url="https://raw.githubusercontent.com/spring-cloud/spring-cloud-sleuth/master/docs/src/main/asciidoc/images/trace-id.png"
    description="Spring Cloud Sleuth: Span and Trace visualisations" %}
 
-### Generating a unique ID for each workflow
+### Use the Sleuth trace ID for each workflow
 
-Instead of generating a new ID (such as a UUID) we decided to take the
+Instead of generating a separate ID (such as a UUID) we decided to take the
 trace ID from Sleuth. Sleuth generates a random long integer as a trace
 ID at the beginning of the request and passes that as part of
-synchronous requests to other services.
+requests to other services.
 
-Part of the rationale for using the trace ID is to reduce log message clutter.
+Part of our rationale for using the trace ID is to reduce log message clutter.
 When Sleuth is included, the IDs are inserted into the Spring logs via
 the SLF4J MDC. Here is a simple Spring Boot log message with information
 added by Sleuth:
 
-    2017-07-14 13:32:59.094  INFO [api-service,92e9013d25cca084,92e9013d25cca084,false] [10.242.22.52] 25453 --- [nio-8080-exec-1] .n.c.s.d.i.c.InitialDiagnosticController : Received request
+    2017-07-14 13:32:59.094  INFO [api-service,92e9013d25cca084,92e9013d25cca084,false] [10.242.22.52] 25453 --- [nio-8080-exec-1] c.e.s.WorkflowController : Received request
 
-* **api-service** is the application name
-* **92e9013d25cca084** is trace ID; it is also the span ID of the first span
-  of a trace (as here)
-* **false** means that the span is not exportable (***More details?***)
+* **api-service** is the service name
+* **92e9013d25cca084** is the trace ID; here it is also the span ID because this is the first
+  span in the trace
+* **false** means that [the log is not exportable to
+  Zipkin](http://cloud.spring.io/spring-cloud-static/spring-cloud-sleuth/1.2.1.RELEASE/#_features)
 
 ## Getting the Sleuth trace ID
 
@@ -61,12 +62,6 @@ Getting the trace ID turned out to be very simple. We created a Spring service
 called `Breadcrumb` to return the formatted trace ID.
 
 ```java
-package com.example.api.service;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.cloud.sleuth.Tracer;
-
 @Service
 public class Breadcrumb {
 
@@ -109,14 +104,18 @@ When `TraceFilter` executes it finds the span in the request attribute
 and uses it as if the service had been called by another one in the same
 trace.
 
-Here is the filter code, abridged for clarity, with notes below:
+Here is the filter code, abridged for clarity, with explanatory comments:
 
 ```java
+// Load this filter before TraceFilter
 @Order(TraceFilter.ORDER - 1)
 public class InjectTraceFilter extends GenericFilterBean {
 
+    // Only modify requests that match this pattern
     private static final Pattern REQUEST_PATTERN = Pattern.compile("^/v1/workflow/(?<crumbId>[0-9a-f]+)$");
+    // Key of the request attribute that TraceFilter searches for
     private static final String TRACE_REQUEST_ATTR = TraceFilter.class.getName() + ".TRACE";
+    // Used to construct the span name
     private static final String SPAN_NAME_BASE = "http:/v1/workflow/";
 
     private final Random random = new Random(System.currentTimeMillis());
@@ -127,6 +126,7 @@ public class InjectTraceFilter extends GenericFilterBean {
         final HttpServletRequest httpRequest = (HttpServletRequest) request;
         final String breadcrumbId = extractBreadcrumbId(httpRequest);
         if (breadcrumbId != null) {
+            // Set up a span with this breadcrumb ID as the trace ID
             httpRequest.setAttribute(TRACE_REQUEST_ATTR, spanForId(breadcrumbId));
             chain.doFilter(httpRequest, response);
         } else {
@@ -134,15 +134,9 @@ public class InjectTraceFilter extends GenericFilterBean {
         }
     }
 
-    private Span spanForId(final String traceId) {
-        return Span.builder()
-                .traceId(Span.hexToId(traceId))
-                .spanId(random.nextLong())
-                .exportable(false)
-                .name(SPAN_NAME_BASE + traceId)
-                .build();
-    }
-
+    /**
+     * Returns the breadcrumb ID if a GET request matches the pattern, otherwise null. 
+     */
     private String extractBreadcrumbId(final HttpServletRequest httpRequest) {
         if ("GET".equals(httpRequest.getMethod())) {
             final Matcher matcher = REQUEST_PATTERN.matcher(httpRequest.getRequestURI());
@@ -153,17 +147,32 @@ public class InjectTraceFilter extends GenericFilterBean {
         return null;
     }
 
+    /**
+     * Constructs a span for the specified trace ID with a random span ID. 
+     */
+    private Span spanForId(final String traceId) {
+        return Span.builder()
+                .traceId(Span.hexToId(traceId))
+                .spanId(random.nextLong())
+                .exportable(false)
+                .name(SPAN_NAME_BASE + traceId)
+                .build();
+    }
 }
 ```
 
-Notes:
+### Configuration to use the filter
 
-* The filter inserts itself into the sequence ahead of `TraceFilter` using
-  `@Order`.
-* The `extractBreadcrumId` method only matches requests to a workflow status
-  request and returns the breadcrumb ID.
-* The `spanForId` method constructs new `Span` that joins the extracted
-  trace. This span mimics those created by `TraceFilter` (***???***) when
-  a request is made from another Sleuth-enabled service.
-* The span is set in the request with a specific key so it is picked up
-  by `TraceFilter`.
+The filter is configured in the standard way:
+
+```java
+@Configuration
+public class InjectTraceFilterAutoConfigure {
+
+    @Bean
+    public InjectTraceFilter injectTraceFilter() {
+        return new InjectTraceFilter();
+    }
+
+}
+```
