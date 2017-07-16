@@ -4,7 +4,12 @@ title:               Relatively Ignorant
 description:         'A blog on things about which I may or may not know stuff'
 paginate:            5
 
-exclude: [".gitignore", "CNAME", "README.md"]
+exclude:
+  - .gitignore
+  - CNAME
+  - README.md
+include:
+  - .well-known
 
 author:
   name:              Michael Strasser

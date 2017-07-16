@@ -7,3 +7,4 @@ You can contact me <a href="http://www.google.com/recaptcha/mailhide/d?k=01M8bnE
 
 * Twitter: [@pharsicle](https://twitter.com/pharsicle)
 * LinkedIn: [michaelstrasser](https://www.linkedin.com/in/michaelstrasser/)
+* Keybase: [mjstrasser](https://keybase.io/mjstrasser)

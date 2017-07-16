@@ -1,0 +1,68 @@
+==================================================================
+https://keybase.io/mjstrasser
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://blog.michaelstrasser.com
+  * I am mjstrasser (https://keybase.io/mjstrasser) on keybase.
+  * I have a public key with fingerprint F541 37DC 4A71 A203 BEE9  F12C A13D 44D8 2E90 4858
+
+To do so, I am signing this object:
+
+{
+    "body": {
+        "key": {
+            "eldest_kid": "010141c99f44dfe08f1d4d9edfa26b040dd19c5f58f909e72238b39ae4c1ef240b110a",
+            "fingerprint": "f54137dc4a71a203bee9f12ca13d44d82e904858",
+            "host": "keybase.io",
+            "key_id": "a13d44d82e904858",
+            "kid": "010141c99f44dfe08f1d4d9edfa26b040dd19c5f58f909e72238b39ae4c1ef240b110a",
+            "uid": "ddd22650c0ace491b3d16f4322f68d00",
+            "username": "mjstrasser"
+        },
+        "service": {
+            "hostname": "blog.michaelstrasser.com",
+            "protocol": "https:"
+        },
+        "type": "web_service_binding",
+        "version": 1
+    },
+    "ctime": 1500207868,
+    "expire_in": 157680000,
+    "prev": "d0d4fe5d110916ed65612da773a98decaf87a7913052044730be95b6e8381e13",
+    "seqno": 40,
+    "tag": "signature"
+}
+
+which yields the signature:
+
+-----BEGIN PGP MESSAGE-----
+Version: Keybase OpenPGP v2.0.73
+Comment: https://keybase.io/crypto
+
+yMI0AnicrZJbSBVRFIaPVppGKIUVdkEGu4h22Htmz+1YFhlpihQ9dJHisGf2Hh31
+zJxmRkstqIfMLEiiCHxJqYyKKFAo6eGohXahGxJU0M0umkIWJGH20B7Jtx7bL4u9
++Na/1r9Yd+fOCCTHta3d+CLYXLgz7mFPe3VgV2Xp73pOs0ktF6rnKulUoFWEul64
+0iRciAMQQAR1VTUQIgYFigEJIiolBuYlDSBACFR10RAVQwUqlXleUDRBxRTpkBo8
+AhqEAHM5nGFaZdSJOqblMVlDRFCQiY6wDDEPBI1S1YC8jqFAWCOFpypAiqiwwnLb
+9SvYcBp2adC0WY59wlPj/YP/z3NXT8kRQnheEoEOsE6RCjWBQMlAAs8bkkIA8EGX
+OhaOUEZHKlzPwS5LcAdzOBZqTJ36q/W9/GW0KrssGDH1ckyrpumgbkeYUtSxPVu3
+qxhV7nlRN+SreLVRv2wf1cJ/BcOaaRG2VVZRQx3XtC0uBBmpe6bfAYoA8EBWJCWH
+o/ujpkPDpk+IsqQA9vw+tMb3BggyqEiYYRVKlEiiBHmCZVnAqkKojg1FxrIKBSDy
+ACFZABpVRU2iiqBACgXOt7jXsrkQYqIeLmOarllmYa/aodzB3u7dMwNxyYGEWfH+
+uQWSk1Knj3Dz99mB5tdbGiomH3SNu5taevoHB+4HF16bfJYbuxqNZF+beTgzvTt1
+zo3h2NHEe79OTmxYOfToxEje+ZaRho8r0seepT29Xhp70qW9blr16sa2zWf6+pqT
+PnWWCCNja8dTxvKLtLdrtvcNF8/PX9Ofcjbza0fR6cbentodda2LwJnRifb0n/nr
+Shq7X2bdXPaU9Kw+XCwNLCwaeKEmpLw93ZCY/e659sHKOz6Bvh1Ik86farCGUMDQ
+O2OBvbffL+leMHSuo+TX0ozBrOuHWusex7a0TZbeuVJRC94sziu43NSWW5j4+UEs
+voDr/bF+weixSxkrtFtfLqZXXthzZHlqkjMv3Fhc37c1+w8no0lb
+=tco+
+-----END PGP MESSAGE-----
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/mjstrasser
+
+==================================================================
