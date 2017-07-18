@@ -32,10 +32,12 @@
   font-family: "PT Sans", Helvetica, Arial, sans-serif;
   font-weight: bold;
 }
-.highlight {
+pre {
   white-space: pre;
   overflow: auto;
   font-size: 0.7rem;
+  /* Safari overrides overflow: auto with word-wrap, but Chrome and Firefox do not */
+  word-wrap: unset;
 }
 code {
   font-size: 80%;
