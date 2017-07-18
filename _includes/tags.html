@@ -4,7 +4,7 @@ Show the current set of tags for a post, if any.
 The src parameter is the post or page with 0 or more tags.
 {% endcomment %}
 
-{% if page.tags != empty %} |
+{% if include.src.tags != empty %} |
 {% for tag in include.src.tags %}
 <a href="{{ site.baseurl }}{% link tags.html %}#{{ tag | slugify }}" class="post-tag">{{ tag }}</a>
 {% endfor %}
