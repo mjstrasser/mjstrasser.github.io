@@ -55,9 +55,9 @@ by default.)
 
 ## Success
 
-An example tweet is:
+**Update:** The tweet for this page is:
 
 ![Example tweet sent by IFTTT]({{ site.baseurl }}/public/images/tweet-pharsicle-ifttt.png)
 
-I have since learnt that [I don’t need to use the IFTTT URL
-shortener](https://michaelsoolee.com/ifttt-links/) and updated my IFTTT settings accordingly.
+By default, IFTTT uses its own link shortener, but I turned that off [as described
+here](https://michaelsoolee.com/ifttt-links/).
