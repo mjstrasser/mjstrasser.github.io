@@ -1,8 +1,9 @@
-permalink:           /:year/:month/:title/
-
 title:               Relatively Ignorant
 description:         'A blog on things about which I may or may not know stuff'
 paginate:            5
+
+url:                 https://blog.michaelstrasser.com
+permalink:           /:year/:month/:title/
 
 exclude:
   - .gitignore
@@ -13,7 +14,8 @@ include:
 
 author:
   name:              Michael Strasser
-  url:               https://michaelstrasser.com/
+  email:             atom@michaelstrasser.com
+  url:               http://michaelstrasser.com/
 
 plugins:
   - jekyll-sitemap
