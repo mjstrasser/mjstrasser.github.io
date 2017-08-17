@@ -14,17 +14,20 @@ needed to recreate them so I decided the document them here.
 
 `git lg` is a short, graphical log display, defined like this:
 
-    git config --global alias.lg 'log --oneline --decorate --all --graph'
+    git config --global alias.lg 'log --oneline --decorate --graph'
 
 Example output is:
 
-![Git log output with --decorate --all]({{ site.baseurl }}/public/images/git-log-decorate-all.png)
+![Git log output with --decorate]({{ site.baseurl }}/public/images/git-log-decorate.png)
 
-I remade it with extra information, that include committer name and date.
+Then I decided to augment it with useful extra information, including colouring.
 
-    git config --global alias.lg 'log --oneline --graph --format="%C(auto)%h [%cn] %d %s [%cr]"'
+    git config --global alias.lg 'log --graph --format="%C(auto)%h %C(cyan)%cn%C(auto)%d %s %C(magenta)%cr"'
 
 ![Git log output with --format]({{ site.baseurl }}/public/images/git-log-format.png)
+
+The `%C(auto)` specification does not colour committer name or date, so I coloured those
+explicitly.
 
 Documentation is here:
 
