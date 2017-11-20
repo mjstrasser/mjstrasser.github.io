@@ -21,6 +21,9 @@ layout: null
    <link href="{{ site.url }}{{ post.url }}"/>
    <updated>{{ post.date | date_to_xmlschema }}</updated>
    <id>{{ site.url }}{{ site.baseurl }}{{ post.id }}</id>
+   {% for tag in post.tags %}
+     <category term="{{ tag }}"/>
+   {% endfor %}
    <content type="html">{{ post.content | xml_escape }}</content>
  </entry>
  {% endfor %}
