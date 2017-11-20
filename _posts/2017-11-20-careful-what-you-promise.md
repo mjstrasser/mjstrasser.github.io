@@ -25,13 +25,11 @@ const getData = async (url, config) => {
 }
 ```  
 
-(An Axios promise rejection is thrown as an exception that is caught elsewhere.)
-
 ## A refactoring mistake
 
-I was refactoring the code to add AWS signing headers to the `config` argument before passing it to
+I was refactoring the function’s code to add AWS signing headers to the `config` argument before passing it to
 Axios. (That task was previously done elsewhere.)
-Given a function `addAwsHeaders` to add the headers, I wrote something like this:
+Given a function `addAwsHeaders` that adds the headers, I wrote something like this:
 
 ```javascript
 const getData = async (url, config) => {
@@ -48,7 +46,11 @@ A correct versions is:
 
 ```javascript
 const getData = async (url, config) => {
-  const { data } = await axios.get(url, await addAwsHeaders(url, config));
+  const awsHeaders = await addAwsHeaders(url, config);
+  const { data } = await axios.get(url, awsHeaders);
   return data;
 }
 ```
+
+It is important to pass the resolved value from the promise, not the promise itself, to the
+function.
