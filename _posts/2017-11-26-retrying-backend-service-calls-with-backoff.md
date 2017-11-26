@@ -12,36 +12,57 @@ library.
 ## Back off!
 
 We wanted to implement the *back-off* pattern to retry service calls when they
-suffer transient failures. With this pattern, the client does not retry
-immediately. Instead, it sleeps for a short delay before retrying again. If
-the same request continues to fail, the client sleeps for progressively longer
-delays before each retry.
+suffer transient failures. With back-off, the client does not retry immediately.
+Instead, it sleeps for a short delay before retrying again. If the same request
+continues to fail, the client sleeps for progressively longer delays before each
+retry.
 
 There is the [axios-retry](https://github.com/softonic/axios-retry) plugin that
 adds retry capability to Axios but it works by counting the number of retries
 without providing any back-off delays. 
 
-## Simple solution
+## A solution
 
-Instead, we implemented simple retry with back-off by looping through an
-iterable of delay periods in milliseconds, like this:
+We implemented retry with back-off by looping through an iterable of delay
+periods in milliseconds:
 
 ```javascript
 const retryAxios = async (delays, axiosFunc, ...axiosArgs) => {
-  for (delay of delays) {
+  // Extract the iterator from the iterable.
+  const iterator = delays[Symbol.iterator]();
+  while (true) {
     try {
+      // Always call the service at least once.
       return await axiosFunc(...axiosArgs);
     } catch (error) {
-      if (isRetriable(error)) {
-        // Sleep for a bit before trying again.
-        await new Promise(resolve => setTimeout(resolve, delay));
+      const { done, value } = iterator.next();
+      if (!done && isRetriable(error)) {
+        await sleep(value);
       } else {
+        // The error is not retriable or the iterable is exhausted.
         throw error;
       }
     }
   }
-  throw new Error('retryAxios: timeout failure');
 };
+```
+
+Notes:
+
+- `delays` is an [ES6
+Iterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols).
+An array is a simple example.
+
+- A `while` loop is used so the service is called at least once. This requires
+the iterable to be unpacked manually and the `done` attribute of the object
+returned by the iterator’s `next` method to be checked after the service is
+called.
+
+- The `sleep` function is the usual promise-based mechanism to wait for a time
+period:
+
+```javascript
+const sleep = delay => new Promise(resolve => setTimeout(resolve, delay));
 ```
 
 ## Transient failures
@@ -123,7 +144,7 @@ class ExponentialDelays {
 ```
 
 ```javascript
-  // Using a custom axios instance as a function with 10 equal-spaced delays.
+  // Using a custom axios instance as a function with 10 equally-spaced delays.
   const customAxios = axios.create({
    timeout: 30000,
    withCredentials: true,
@@ -139,3 +160,10 @@ class ExponentialDelays {
     }
   });
 ```
+## A note on ESLint
+
+The code for `retryAxios` shown here violates a number of default
+[ESLint](https://eslint.org/) rules (`no-await-in-loop`, `no-constant-condition`
+and `consistent-return`). Comments to selectively disable those rules have been
+omitted here for clarity, but are present in the complete code [in this
+Gist](https://gist.github.com/mjstrasser/69d0d03f0eedb513ae529a0c137800f1).
