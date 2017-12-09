@@ -54,8 +54,8 @@ Iterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iter
 An array is a simple example.
 
 - A `while` loop is used so the service is called at least once. This requires
-the iterable to be unpacked manually and the `done` attribute of the object
-returned by the iterator’s `next` method to be checked after the service is
+the iterable to be unpacked manually so the `done` attribute of the object
+returned by the iterator’s `next` method can be checked after the service is
 called.
 
 - The `sleep` function is the usual promise-based mechanism to wait for a time
