@@ -37,7 +37,8 @@ Here, given the first URI, the `path` variable gets the value `swagger.yaml` as 
 The second URI does not match at all.
 
 There is no simple way to extract multiple parts of a path into a single variable. I think
-this is because the Spring classes split the path into segments using slash characters.
+this is because the Spring classes split the path into segments using slash characters
+before matching each segment with a regular expression.
 
 A working solution is to get the entire path from the servlet request object and parse
 it locally.
