@@ -1,5 +1,4 @@
-
---
+---
 layout: post
 title: Kotlin extensions
 categories: tech
@@ -19,7 +18,7 @@ returns the receiving object or the value of the lambda.
 
 # Return the receiver
 
-The functions `also` and `apply` return the receiver. For example, this is a natural way to get a
+The functions `also` and `apply` return the receiver. For example, here is a natural way to get a
 Jackson object mapper and configure it in one expression:
 
 ```kotlin
@@ -29,6 +28,8 @@ val mapper = jacksonObjectMapper().apply {
 }
 ```
 
+Within the lambda, `this` is set to the object returned by `jacksonObjectMapper()`.
+
 If the receiver is not used inside the lambda, `also` is natural:
 
 ```kotlin
@@ -36,5 +37,4 @@ return serviceResponse.also {
     log.info("Relevant log message.")
 }
 ```
-
 
