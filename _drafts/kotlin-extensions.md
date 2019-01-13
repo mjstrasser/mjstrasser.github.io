@@ -30,11 +30,33 @@ val mapper = jacksonObjectMapper().apply {
 
 Within the lambda, `this` is set to the object returned by `jacksonObjectMapper()`.
 
-If the receiver is not used inside the lambda, `also` is natural:
+Similarly, `also` returns the receiver and passes it to the lambda as an argument instead
+of as `self`. It feels natural for side-effects that do not change the receiver, like logging:
 
 ```kotlin
 return serviceResponse.also {
-    log.info("Relevant log message.")
+    log.info("Returning service response: $it")
+}
+
+// or alternatively:
+
+return serviceResponse.also { resp ->
+    log.info("Returning service response: $resp")
 }
 ```
+
+# Return the value of the lambda
+
+The functions `let`, `run` and `with` return the lambda. They can be used as idiomatic
+`null` checks, for example:
+
+```kotlin
+val result = value?.let { transform(it) } ?: defaultValue
+```
+
+This has the meaning, _If `value` is not null, transform it; else return a default
+(transformed) value._
+
+`run` is similar, except that it applies directly to the receiver (avaiable as `this` in
+the lambda). `with` is reminiscent of the `with` structure in Visual Basic.
 
