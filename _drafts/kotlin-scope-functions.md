@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Kotlin extensions
+title: Kotlin scope functions
 categories: tech
 tags: kotlin
 ---
@@ -60,3 +60,11 @@ This has the meaning, _If `value` is not null, transform it; else return a defau
 `run` is similar, except that it applies directly to the receiver (avaiable as `this` in
 the lambda). `with` is reminiscent of the `with` structure in Visual Basic.
 
+In fact, there is a `with` function like that in VB, except that it returns the value of
+the lambda (which can be ignored).
+
+```kotlin
+with(something) {
+    setValue(newValue)
+}
+```
