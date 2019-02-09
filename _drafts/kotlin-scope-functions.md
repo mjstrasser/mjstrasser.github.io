@@ -55,12 +55,12 @@ val result = value?.let { transform(it) } ?: defaultValue
 ```
 
 This has the meaning, _If `value` is not null, transform it; else return a default
-(transformed) value._
+value._
 
 `run` is similar, except that it applies directly to the receiver (avaiable as `this` in
-the lambda). `with` is reminiscent of the `with` structure in Visual Basic.
+the lambda).
 
-In fact, there is a `with` function like that in VB, except that it returns the value of
+There is a `with` function like that in Visual Basic, except that it returns the value of
 the lambda (which can be ignored).
 
 ```kotlin
