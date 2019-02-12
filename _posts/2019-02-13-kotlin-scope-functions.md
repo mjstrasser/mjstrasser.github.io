@@ -8,7 +8,9 @@ tags: kotlin
 I have been working with [Kotlin](https://kotlinlang.org/) recently and really enjoying it 
 compared to Java.
 
-One useful feature that I like is the ability to extend objects (classes?). 
+One useful feature that I like is the ability to define extension functions on existing
+classes. 
+ 
 These built-in scope functions `let`, `run`, `also`, `apply` and `with` are really useful
 and are described well in
 [Coping with Kotlin scope functions](https://kotlinexpertise.com/coping-with-kotlins-scope-functions/).
@@ -31,17 +33,11 @@ val mapper = jacksonObjectMapper().apply {
 Within the lambda, `this` is set to the object returned by `jacksonObjectMapper()`.
 
 Similarly, `also` returns the receiver and passes it to the lambda as an argument instead
-of as `self`. It feels natural for side-effects that do not change the receiver, like logging:
+of as `self`. This feels natural for side-effects that do not change the receiver, like logging:
 
 ```kotlin
 return serviceResponse.also {
     log.info("Returning service response: $it")
-}
-
-// or alternatively:
-
-return serviceResponse.also { resp ->
-    log.info("Returning service response: $resp")
 }
 ```
 
