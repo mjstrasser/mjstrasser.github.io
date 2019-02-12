@@ -8,14 +8,14 @@ tags: kotlin
 I have been working with [Kotlin](https://kotlinlang.org/) recently and really enjoying it 
 compared to Java.
 
-One useful feature that I like is the ability to define extension functions on existing
+A really useful feature is the ability to define extension functions on existing
 classes. 
  
-These built-in scope functions `let`, `run`, `also`, `apply` and `with` are really useful
+The built-in scope functions `let`, `run`, `also`, `apply` and `with` are really handy
 and are described well in
 [Coping with Kotlin scope functions](https://kotlinexpertise.com/coping-with-kotlins-scope-functions/).
 
-It can be difficult to remember which one to use. I like to think first of whether the function
+It can be difficult to remember which one to use. It helps me to think first of whether the function
 returns the receiving object or the value of the lambda.
 
 # Return the receiver
