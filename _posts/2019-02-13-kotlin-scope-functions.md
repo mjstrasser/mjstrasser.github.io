@@ -64,3 +64,8 @@ with(something) {
     setValue(newValue)
 }
 ```
+
+# Quick mnemonic
+
+* **If** the scope function starts with **a** (`also`, `apply`) it returns the receiver;
+* **else** (`let`, `run`, `with`) it returns the lambda.
