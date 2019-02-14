@@ -5,10 +5,11 @@ categories: tech
 tags: spring java
 ---
 
-I recently worked on a Spring Boot application that stores and works with Swagger files.
+A while back I worked on a Spring Boot application that stores and works with Swagger files.
 It has a controller that needs to capture file paths at the end of request URIs. 
 
-We need to extract three variables: `project`, `repo` and `path`. Some examples:
+We need to extract three variables: `project`, `repo` and `path`, where `path` may traverse multiple
+layers. Some examples:
 
 | URI | project | repo | path |
 |-----|---------|------|------|
@@ -24,19 +25,19 @@ public ResponseEntity<String> swaggerFile(@PathVariable("project") String projec
                                           @PathVariable("path") String path) {
 ```
 
-Here, given the first URI, the `path` variable gets the value `swagger` without the file extension.
+With this, when using the first URI, the `path` variable gets the value `swagger` without the file extension.
 The second URI does not match at all.
 
-The file extension is captured by using a regular expression, for example:
+The file extension can be captured by using a regular expression, for example:
 
 ```java
 @GetMapping(path = "/swagger/{project}/{repo}/{path:.+}")
 ```
 
 Here, given the first URI, the `path` variable gets the value `swagger.yaml` as desired.
-The second URI does not match at all.
+But the second URI still does not match at all.
 
-There is no simple way to extract multiple parts of a path into a single variable. I think
+There is no simple way to extract a deep path into a single variable. I think
 this is because the Spring classes split the path into segments using slash characters
 before matching each segment with a regular expression.
 
