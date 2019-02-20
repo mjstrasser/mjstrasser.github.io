@@ -8,24 +8,27 @@ tags: docker teamcity aws ecs
 I have been experimenting with running [TeamCity](https://www.jetbrains.com/teamcity/) in
 [AWS](https://aws.amazon.com/), using the [CloudFormation](https://aws.amazon.com/cloudformation/)
 stack [provided by JetBrains](https://confluence.jetbrains.com/display/TCD18/Running+TeamCity+Stack+in+AWS).
-This stack sets up [EC2](https://aws.amazon.com/ec2/) instances to host [Docker](https://docker.io/)
-containers in [EC2](https://aws.amazon.com/ecs/).
+This stack uses [Docker](https://docker.com/) images [from JetBrains](https://hub.docker.com/u/jetbrains)
+and runs them in AWS [Elastic Container Service](https://aws.amazon.com/ecs/).
 
-However the default configuration does not allow Docker-in-Docker builds: where a TeamCity agent,
-itself running in a Docker container, needs to run a build step with Docker or
-[Docker Compose](https://docs.docker.com/compose/). The [page for the JetBrains Docker image for
-agents](https://hub.docker.com/r/jetbrains/teamcity-agent) gives two options for starting the agent
-container:
+However the default configuration does not allow Docker-in-Docker builds. This is the situation
+where a TeamCity agent, itself running in a Docker container, needs to run a build step with Docker or
+[Docker Compose](https://docs.docker.com/compose/). 
+
+The [page for the JetBrains Docker image for agents](https://hub.docker.com/r/jetbrains/teamcity-agent)
+gives two options for starting the agent container from the command line:
 
 * Docker from the host
 * Run in privileged mode
 
 This post is about how to modify the [JetBrains CloudFormation
-template](https://s3.amazonaws.com/teamcity.jetbrains.com/teamcity-server.yaml).
+template](https://s3.amazonaws.com/teamcity.jetbrains.com/teamcity-server.yaml) to start the agent
+container in those two ways.
 
 # Docker from the host
 
-This technique maps `/var/run/docker.sock` from the Docker host into the running container:
+This technique maps `/var/run/docker.sock` from the Docker host into the running container.
+Declare a host volume and mount it in the container (see comments):
 
 ```yaml
   AgentTaskDefinition:
@@ -58,11 +61,13 @@ This technique maps `/var/run/docker.sock` from the Docker host into the running
                 awslogs-group: !Ref ECSLogGroup
                 awslogs-region: !Ref AWS::Region
                 awslogs-stream-prefix: 'aws/ecs/teamcity-agent'
-            # Mount the host volume
+            # Mount the host volume in the container.
             MountPoints:
               - ContainerPath: "/var/run/docker.sock"
                 SourceVolume: "dockerSock"
 ```
+
+I have used this method successfully.
 
 # Run in privileged mode
 
@@ -98,3 +103,5 @@ container definitions:
                 awslogs-region: !Ref AWS::Region
                 awslogs-stream-prefix: 'aws/ecs/teamcity-agent'
 ```
+
+I have not tried this method yet.
