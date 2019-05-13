@@ -6,18 +6,22 @@ tags: poetry
 ---
 
 “Are you glad to be home?”  
-&nbsp;&nbsp;they ask of me  
-&nbsp;&nbsp;after some time living away.  
+ they ask of me  
+  after some time living away.  
 Of course! Where the heart is.  
-&nbsp;&nbsp;But the city of my birth  
-&nbsp;&nbsp;laid a claim on mine over those five years.  
-After many years of making this one mine.
+ But the city of my birth  
+  laid a claim on mine  
+   over those five years.  
+
+My curated home was here  
+  and will be again  
+   when I am again used to it.
 
 “So where is home?”  
-&nbsp;&nbsp;I felt safe to ask after a “back home” comment  
-&nbsp;&nbsp;… being careful of a “where do you come from?” gaffe  
+  I felt safe to ask after a “back home” comment  
+   … being careful of a “where do you come from?” gaffe  
 
 
 Even if my choices don’t enmesh perfectly  
-&nbsp;&nbsp;…  
-&nbsp;&nbsp;But at least I was free to choose.
+  …  
+  But at least I was free to choose.
