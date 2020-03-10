@@ -14,24 +14,24 @@ New Relic’s [Distributed Tracing](https://docs.newrelic.com/docs/understand-de
 enables transactions to be traced through multiple services
 instrumented with its agents. This is a very powerful feature that enables
 anomalous traces to be found quickly and examined. We instrumented the Spring Boot
-services with New Relic and were able to follow calls it made to two downstream services 
-using Spring
-[`RestTemplate`](https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html#webmvc-resttemplate)
-instances. 
+services with New Relic and were able to follow synchronous calls made to downstream 
+services. 
 
 # The problem
 
-Our services executed some code asynchronously using [custom application
-events](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#context-functionality-events)
-that are published by calling `ApplicationEventMulticaster.multicastEvent()` and subscribed to by [asynchronous
+Our services also executed some code asynchronously using [custom application
+events](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#context-functionality-events).
+Events are published by calling `ApplicationEventMulticaster.multicastEvent()` and subscribed to by [asynchronous
 listenters](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#context-functionality-events-async).
 We found that New Relic trace state was not being transferred with the events to the 
-listeners in new threads executing the code. If that code called other services,
-those calls were not recognised as participating in the original trace.
+listeners in new threads executing the code. 
+
+When that code called other services, those services were not recognised by New Relic
+as participating in the same distributed trace.
 
 # A simple solution
 
-Our solution was to extend the Spring `ApplicationEvent` class to carry a
+Our solution was to extend the Spring `ApplicationEvent` class to carry with it a
 New Relic trace token, and for the listener code to link that token to its New Relic
 context.
 
@@ -43,9 +43,7 @@ Include the New Relic agent in the project’s runtime dependencies. In Gradle:
     implementation 'com.newrelic.agent.java:newrelic-api:5.10.0'
 ```
 
-## `TracedEvent` class
-
-A complete example:
+## The `TracedEvent` class
 
 ```java
 package com.example.events;
@@ -76,7 +74,13 @@ of `Transaction` that itself returns a safe, do-nothing instance of `Token`.
 
 ## Listener code
 
-Key parts of the code:
+Important parts of the code:
+
+```java
+public class SomeEvent extends TracedEvent {
+    // etc.
+}
+```
 
 ```java
 import com.newrelic.api.agent.Trace;
@@ -85,7 +89,7 @@ import com.newrelic.api.agent.Trace;
 public class ExampleListener {
 
     @Trace(async = true) // Signal to New Relic to trace this method
-    public void onEvent(TracerEventSubclass event) {
+    public void onEvent(SomeEvent event) {
         event.linkToken(); // Do this first
 
         // Act on the event
