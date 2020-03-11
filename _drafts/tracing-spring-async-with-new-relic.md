@@ -6,27 +6,27 @@ tags: spring-boot tracing new-relic
 ---
 
 I have been working with Spring Boot microservices in an environment that is monitored
-using [New Relic](https://newrelic.com). New Relic uses agents deployed with 
-agents that send status and other information
+using [New Relic](https://newrelic.com). Applications instrumented by New Relic are
+deployed with agents that send status and other information
 to a central server for monitoring and analysis. 
 
 New Relic’s [Distributed Tracing](https://docs.newrelic.com/docs/understand-dependencies/distributed-tracing/get-started/introduction-distributed-tracing)
-enables transactions to be traced through multiple services
-instrumented with its agents. This is a very powerful feature that enables
-anomalous traces to be found quickly and examined. We instrumented the Spring Boot
-services with New Relic and were able to follow synchronous calls made to downstream 
+enables complex request flows to be traced through multiple services
+instrumented with its agents. This is a powerful tool for quickly finding
+interesting or anomalous traces so they can be examined. We instrumented the Spring Boot
+services with New Relic and were able to follow calls made to downstream 
 services. 
 
 # The problem
 
-Our services also executed some code asynchronously using [custom application
-events](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#context-functionality-events).
+But it didn’t trace all calls to other services. We executed some code asynchronously using Spring’s
+[custom application events](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#context-functionality-events).
 Events are published by calling `ApplicationEventMulticaster.multicastEvent()` and subscribed to by [asynchronous
 listenters](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#context-functionality-events-async).
-We found that New Relic trace state was not being transferred with the events to the 
-listeners in new threads executing the code. 
+We found that New Relic trace context was not being transferred with the events to the 
+listeners in different threads. 
 
-When that code called other services, those services were not recognised by New Relic
+When the asynchronous listener code called other services, those services were not recognised by New Relic
 as participating in the same distributed trace.
 
 # A simple solution
