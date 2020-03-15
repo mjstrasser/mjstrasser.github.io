@@ -47,4 +47,19 @@ Here is an example model. A company has xxx users in offices across 8 regions:
 * Request rate is often calculated as a metric by tools like AWS CloudWatch and
   New Relic.
 
+## Assumptions
+
+* Relationships between regions and time zones (i.e. distributions of people across zones).
+* Everyone will use the product on the first day.
+* Usage is evenly distributed throughout that day. This can be varied to experiment with
+  different models.
+* Length of user sessions.
+
+## Relationship between users and API calls
+
+User journey models
+
+* How many steps in a journey?
+* How much time between steps?
+* How many API calls in each step?  
 

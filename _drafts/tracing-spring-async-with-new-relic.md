@@ -21,7 +21,7 @@ services.
 
 But it didn’t trace all calls to other services. We executed some code asynchronously using Spring’s
 [custom application events](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#context-functionality-events).
-Events are published by calling `ApplicationEventMulticaster.multicastEvent()` and subscribed to by [asynchronous
+Events are published by an `ApplicationEventMulticaster` configured with a task executor, and subscribed to by [asynchronous
 listenters](https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#context-functionality-events-async).
 We found that New Relic trace context was not being transferred with the events to the 
 listeners in different threads. 
@@ -97,5 +97,17 @@ public class ExampleListener {
 }
 ```
 
-That is all you need to do for New Relic to include code executed by the listener and
-called by it in the same thread.
+# Future improvements
+
+This simple solution was adequate for our immediate purposes but is not complete. The New Relic documentation
+states that a `Token#expire()` should be called after use. With `ApplicationEventMulticaster` an event
+may be listened to by multiple listeners so it is not clear which one should expire the token. (In our case
+each event had only one listener.)
+
+I believe it is valid to retrieve multiple tokens from a single New Relic transaction and use each
+one independently. A better solution is either to fetch a token for each
+listener, or to fetch a token for each thread used by the event multitasker’s task executor.
+
+It is better to use Spring configuration to automatically fetch tokens and use them in new contexts.
+[Spring Cloud Sleuth](https://cloud.spring.io/spring-cloud-sleuth) uses this technique to ensure
+tracing information is propagated to new threads. 
