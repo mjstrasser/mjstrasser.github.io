@@ -2,7 +2,7 @@
 layout: post
 title: Tracing Spring asynchronous code with New Relic
 categories: tech
-tags: spring-boot tracing new-relic
+tags: spring-boot tracing new-relic java
 ---
 
 I have been working with Spring Boot microservices in an environment that is monitored
@@ -14,7 +14,7 @@ New Relic’s [Distributed Tracing](https://docs.newrelic.com/docs/understand-de
 enables complex request flows to be traced through multiple services
 instrumented with its agents. This is a powerful tool for quickly finding
 interesting or anomalous traces so they can be examined. We instrumented the Spring Boot
-services with New Relic and were able to follow calls made to downstream 
+services with New Relic and were able to follow synchronous calls made to downstream 
 services. 
 
 # The problem
@@ -62,13 +62,13 @@ public class TracedEvent extends ApplicationEvent {
     }
  
     public void linkToken() {
-        traceToken.link();
+        traceToken.linkAndExpire();
     }
 }
 ```
 
 There is no need for null checking on New Relic classes because `NewRelic.getAgent()` always
-returns a usable object. When the code executes without the
+returns a usable object. When the code executes without an actual
 agent connected, it returns an instance of `NoOpAgent` that returns a safe instance
 of `Transaction` that itself returns a safe, do-nothing instance of `Token`.
 
@@ -88,7 +88,7 @@ import com.newrelic.api.agent.Trace;
 @Service
 public class ExampleListener {
 
-    @Trace(async = true) // Signal to New Relic to trace this method
+    @Trace(async = true) // Ensure New Relic traces this method’s thread
     public void onEvent(SomeEvent event) {
         event.linkToken(); // Do this first
 
@@ -99,14 +99,14 @@ public class ExampleListener {
 
 # Future improvements
 
-This simple solution was adequate for our immediate purposes but is not complete. The New Relic documentation
-states that a `Token#expire()` should be called after use. With `ApplicationEventMulticaster` an event
-may be listened to by multiple listeners so it is not clear which one should expire the token. (In our case
-each event had only one listener.)
+This simple solution was adequate for our immediate purposes but is not complete. With
+`ApplicationEventMulticaster` an event may be listened to by multiple listeners but the token
+will be expired by the first listener that uses it. In our case
+each event had only one listener.
 
-I believe it is valid to retrieve multiple tokens from a single New Relic transaction and use each
-one independently. A better solution is either to fetch a token for each
-listener, or to fetch a token for each thread used by the event multitasker’s task executor.
+It is valid to retrieve multiple tokens from a single New Relic transaction and use each
+one independently. We could fetch a token for each
+listener or to fetch a token for each thread used by the event multitasker’s task executor.
 
 It is better to use Spring configuration to automatically fetch tokens and use them in new contexts.
 [Spring Cloud Sleuth](https://cloud.spring.io/spring-cloud-sleuth) uses this technique to ensure
