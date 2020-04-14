@@ -21,14 +21,14 @@ subclass of `ApplicationEvent` to carry a New Relic token. It has some disadvant
 This method uses an implementation of `java.util.concurrent.Executor` that wraps a
 delegate instance.
 
-1. The `NewRelicTraceExecutor#execute` method is called in the parent thread. It creates an implementation
-   of `TracedRunnable` that wraps the one it is given.
+1. The `NewRelicTraceExecutor#execute` method is called in the parent thread. It constructs
+   a `TracedRunnable` that wraps the `Runnable` instance it is given.
 
 2. The `TracedRunnable#run` method is called in the child thread. It calls `Token#linkAndExpire` method
    before calling `run` on its delegate `Runnable`.
    
 All the New Relic-specific code is in this one class, which can be wired into a Spring Boot
-application to be used with `ApplicationEventMulticaster`. Each event listener runs in its own
+application to be used with `ApplicationEventMulticaster`. Each event listener has its own
 `Runnable` instance with its own New Relic token.
 
 ```java
@@ -74,3 +74,8 @@ public class NewRelicTraceExecutor implements Executor {
 }
 ```
 
+As before, there is a dependency on the New Relic API. In Gradle:
+
+```groovy
+    implementation 'com.newrelic.agent.java:newrelic-api:5.11.0'
+```
