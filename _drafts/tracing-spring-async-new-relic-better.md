@@ -10,7 +10,8 @@ In my [earlier post about tracing Spring asynchronous code with New Relic]({% po
 subclass of `ApplicationEvent` to carry a New Relic token. It has some disadvantages:
 
 1. Code that uses it must explicitly declare New Relic tracing using the `@Trace`
-   annotation and must also call the `linkToken` method on the event object.
+   annotation, must create subclasses of `TracedEvent` and must call the
+   `TracedEvent#linkToken` method on the event object.
    
 2. Each token can only be expired once, even if an event is listened to by multiple
    listeners.
@@ -18,7 +19,17 @@ subclass of `ApplicationEvent` to carry a New Relic token. It has some disadvant
 # A better way
 
 This method uses an implementation of `java.util.concurrent.Executor` that wraps a
-delegate instance. Comments in the following code describe how it works.
+delegate instance.
+
+1. The `NewRelicTraceExecutor#execute` method is called in the parent thread. It creates an implementation
+   of `TracedRunnable` that wraps the one it is given.
+
+2. The `TracedRunnable#run` method is called in the child thread. It calls `Token#linkAndExpire` method
+   before calling `run` on its delegate `Runnable`.
+   
+All the New Relic-specific code is in this one class, which can be wired into a Spring Boot
+application to be used with `ApplicationEventMulticaster`. Each event listener runs in its own
+`Runnable` instance with its own New Relic token.
 
 ```java
 package com.example.tracing;
@@ -56,12 +67,8 @@ public class NewRelicTraceExecutor implements Executor {
         @Trace(async = true)
         @Override
         public void run() {
-            try {
-                token.link();
-                delegate.run();
-            } finally {
-                token.expire();
-            }
+            token.linkAndExpire();
+            delegate.run();
         }
     }
 }
