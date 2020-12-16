@@ -53,7 +53,7 @@ val result = value?.let { transform(it) } ?: defaultValue
 This has the meaning, _If `value` is not null, transform it; else return a default
 value._
 
-`run` is similar, except that it applies directly to the receiver (avaiable as `this` in
+`run` is similar, except that it applies directly to the receiver (available as `this` in
 the lambda).
 
 There is a `with` function like that in Visual Basic, except that it returns the value of
