@@ -1,5 +1,6 @@
 title:               Relatively Ignorant
 description:         'A blog on things about which I may or may not know stuff'
+tagline:             'A blog on things about which I may or may not know stuff'
 paginate:            5
 
 url:                 https://blog.michaelstrasser.com
