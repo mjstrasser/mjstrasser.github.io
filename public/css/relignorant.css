@@ -46,3 +46,11 @@ code {
 #markdown-toc li {
   font-family: "PT Sans", Helvetica, Arial, sans-serif;
 }
+
+.build-revision {
+  display: none;
+}
+
+.revision-hover:hover > .build-revision {
+  display: inline;
+}
