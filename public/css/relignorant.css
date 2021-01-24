@@ -54,3 +54,11 @@ code {
 .revision-hover:hover > .build-revision {
   display: inline;
 }
+
+.site-tagline {
+  display: inline;
+}
+
+.revision-hover:hover > .site-tagline {
+  display: none;
+}
