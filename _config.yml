@@ -4,6 +4,7 @@ tagline:             'A blog on things about which I may or may not know stuff'
 paginate:            5
 
 url:                 https://blog.michaelstrasser.com
+baseurl:             /
 permalink:           /:year/:month/:title/
 
 exclude:
