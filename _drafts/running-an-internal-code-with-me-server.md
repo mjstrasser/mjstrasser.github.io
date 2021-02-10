@@ -23,3 +23,22 @@ explain how that can be done.
 
 I have deployed the lobby server to XXX to experiment with using only P2P connections, which is the simpler
 configuration. If P2P connections work over the XXX VPN there is probably no need for relay servers.
+
+
+```Dockerfile
+FROM debian:buster-slim
+
+ADD dist/lobby /home/lobby-server
+
+RUN apt-get update && apt-get install -y unzip net-tools procps && apt-get clean
+
+WORKDIR /home/lobby-server
+
+ENV JAVA_HOME /home/lobby-server/jbr
+ENV SERVER_PORT 8080
+ENV ENABLED_FEATURES p2p_quic,direct_tcp
+
+ENTRYPOINT ["bin/lobby-server"]
+
+EXPOSE 8080
+```
