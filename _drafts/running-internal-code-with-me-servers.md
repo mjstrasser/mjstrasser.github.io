@@ -12,27 +12,34 @@ function to [Visual Studio Code Live Share](https://code.visualstudio.com/learn/
 > It enables you to share the currently opened project in your IDE with others, 
 > and work on it together in real time.
 
-It has been in EAP for a few months and seems pretty useful.
+It has been in EAP for a few months and works pretty well.
 
-Code With Me uses central servers to link users and exchange information. There are two kinds of servers:
-
-- a **lobby server** that connects parties who want to code together; and
-- one or more **relay servers** that connect hosts and guests in case P2P connections don’t work or are forbidden.
-
-By default, Code With Me uses servers provided by JetBrains, but it is possible to set up your own.
+Code With Me uses central servers to link users and exchange information.
+By default, Code With Me uses servers provided by JetBrains, but they make it possible to set up your own.
 
 # Running servers in a closed environment
 
 I have been working with a large company that uses JetBrains IDEs and has switched to almost-exclusively
-remote work. Like many companies, there was some concern about the potential for proprietary code and other sensitive
-information to leak outside if external servers are used. 
+remote work. They can really benefit from using Code With Me but are understandably
+concerned to protect their code and sensitive information and might not be comfortable with using external servers.
 
-The company has a capable internal platform for deploying services so setting it up was easy. By default, services
+I was interested to see how easy it would be to run internal Code With Me
+servers on the company’s internal cloud infrastructure.
+
+The company has a capable internal platform for deploying services on AWS which made
+setting it up was easy. By default, services
 deployed on it are only visible to users on the internal network and VPN.
 
-I also wanted to test the idea that relay servers may not be necessary, at least to begin with, for internal
-company users. Relay servers are not needed if user computers have direct network routes to each other. 
-The VPN hosts are all on the private `172.16.0.0/12` address range so it seemed possible.   
+Coffee With Me uses two kinds of servers:
+
+- a **lobby server** that connects parties who want to code together; and
+- one or more **relay servers** that connect hosts and guests in case direct 
+P2P connections don’t work or are forbidden.
+
+I also wanted to test the idea that relay servers are not needed for internal
+company users.  
+The VPN hosts are all on the private `172.16.0.0/12` address range so 
+it seemed possible.   
 
 
 
