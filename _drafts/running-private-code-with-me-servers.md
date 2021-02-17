@@ -2,7 +2,7 @@
 layout: post
 title: Running private Code With Me servers
 categories: tech
-tags: remote-work
+tags: remote-work aws jetbrains
 ---
 
 JetBrains is developing [Code With Me](https://www.jetbrains.com/code-with-me/) that performs a very
@@ -32,7 +32,7 @@ cloud infrastructure. The company has a platform for deploying containerised wor
 AWS that made it easy to set up. By default, services deployed on it are only visible to users on
 the internal network and VPN.
 
-## Lobby and relay servers
+## Can we use only a lobby server?
 
 Code With Me uses two kinds of servers:
 
@@ -71,14 +71,19 @@ ENTRYPOINT ["bin/lobby-server"]
 EXPOSE 8080
 ```
 
+Compared with the example in the [administration
+guide](https://jetbrains.com/help/cwm/code-with-me-administration-guide.html):
+
 - There was no need for a `config.json` file because we were not setting up relay servers.
 - The platform can provision Redis instances for services, so `REDIS_HOST` and `REDIS_PORT` were 
   set in platform configuration. 
 - `BASE_URL` was set per environment in platform configuration.
-- The platform provisions load balancers with certificates so there is no need for Nginx and 
-  certificate information.
+- The platform provisions load balancers with certificates so there is no need for NGINX and 
+  certificate configuration.
   
 ## Did it work?
 
-Yes. We found that both `p2p_quic` and `direct_tcp` features must be enabled for P2P communication
-to work.
+Yes! 
+
+We tried enabling only `direct_tcp` but that didn’t work: `p2p_quic` was also required for 
+P2P communication to work.
