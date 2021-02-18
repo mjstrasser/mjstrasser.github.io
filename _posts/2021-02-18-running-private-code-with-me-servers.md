@@ -6,17 +6,17 @@ tags: remote-work aws jetbrains
 ---
 
 JetBrains is developing [Code With Me](https://www.jetbrains.com/code-with-me/) that performs a very
-similar function
-to [Visual Studio Code Live Share](https://code.visualstudio.com/learn/collaboration/live-share):
+similar function to
+[Visual Studio Code Live Share](https://code.visualstudio.com/learn/collaboration/live-share):
 
 > Code With Me is a new collaborative development and pair programming service.
 > It enables you to share the currently opened project in your IDE with others,
 > and work on it together in real time.
 
-It has been in EAP for a few months and works pretty well.
+It has been in Early Access Program for a few months and works pretty well.
 
-Code With Me uses central servers to connect users with each other. Once connected they communicate
-directly with each other (peer-to-peer) if possible.
+Code With Me uses central servers to connect users with each other. Once connected they 
+can communicate directly with each other.
 
 # Running servers in a closed environment
 
@@ -27,7 +27,7 @@ exclusively switched to remote work. They could really benefit from using Code W
 understandably concerned to protect their code and sensitive information and might not be
 comfortable using external servers.
 
-I wanted to see how easy it would be to run private Code With Me servers on the company’s internal
+I wanted to see how easy it would be to run private Code With Me servers on the company’s managed
 cloud infrastructure. The company has a platform for deploying containerised workloads on
 AWS that made it easy to set up. By default, services deployed on it are only visible to users on
 the internal network and VPN.
@@ -80,10 +80,11 @@ guide](https://jetbrains.com/help/cwm/code-with-me-administration-guide.html):
 - `BASE_URL` was set per environment in platform configuration.
 - The platform provisions load balancers with certificates so there is no need for NGINX and 
   certificate configuration.
+- Removed `ws_relay` from the list of `ENABLED_FEATURES`.
   
 ## Did it work?
 
 Yes! 
 
-We tried enabling only `direct_tcp` but that didn’t work: `p2p_quic` was also required for 
-P2P communication to work.
+We tried using `direct_tcp` without `p2p_quic` but it stopped working: the latter was also required
+for P2P communication to work in this environment.
