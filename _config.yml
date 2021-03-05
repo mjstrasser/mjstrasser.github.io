@@ -11,6 +11,7 @@ exclude:
   - .gitignore
   - CNAME
   - README.md
+  - .tool-versions
 include:
   - .well-known
 
