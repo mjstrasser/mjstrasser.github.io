@@ -177,7 +177,7 @@ fun CallbackContext.callback() {
 
 ## WireMock Parameters extension function
 
-An extension to the WireMock `Parameters` class makes reading double values easy:
+An extension to the WireMock `Parameters` class makes it easy to read double values safely:
 
 ```kotlin
 fun Parameters.getDoubleValue(key: String, default: Double) = if (key in this)
@@ -192,3 +192,28 @@ else default
 
 The [tests for this function](https://github.com/mjstrasser/wiremock-async/blob/main/src/test/kotlin/mjs/wiremock/ParametersTest.kt)
 show how it works.
+
+# Putting it together
+
+A Gradle ‘uber-JAR’ task bundles WireMock standalone and extension code into one large JAR:
+
+```kotlin
+tasks.register<Jar>("uberJar") {
+    archiveClassifier.set("uber")
+
+    from(sourceSets.main.get().output)
+
+    dependsOn(configurations.runtimeClasspath)
+    from({
+        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+    })
+}
+```
+
+The command-line to start it becomes:
+
+```shell
+java -cp wiremock-async-uber.jar \
+  com.github.tomakehurst.wiremock.standalone.WireMockServerRunner \
+  --extensions mjs.wiremock.DelayedCallback
+```
