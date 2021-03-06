@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Extending WireMock for later callbacks
+title: Extending WireMock for delayed callbacks
 categories: tech
 tags: testing test-double kotlin
 ---
@@ -8,20 +8,20 @@ tags: testing test-double kotlin
 [WireMock](http://wiremock.org/) is a flexible Java test double for HTTP APIs that can be run in-process and 
 as a standalone application. It has many built-in features and can also be extended.
 
-# Asynchronous APIs
+# Delayed callbacks
 
-A little while back I had set up WireMock in standalone mode for performance testing of a service that makes a large
-number of HTTP requests. In some cases the service makes HTTP calls to services that initiate some work and
+A little while back I had set up WireMock in standalone mode as part of testing a client’s service.
+In some cases the service makes HTTP calls to other services that perform some work and
 call back later. The delay can be as much as 10 minutes: much longer than an HTTP server timeout.
 
-I was able to model these asynchronous APIs in a WireMock extension as described here. The
-extension is in Kotlin and is the GitHub
-project [WireMock extension for asynchronous APIs with later callbacks](https://github.com/mjstrasser/wiremock-async).
+I wrote a WireMock extension that models these asynchronous APIs so we could test them.
+The extension is in Kotlin and a simplified version is the GitHub project [WireMock extension for asynchronous APIs
+with later callbacks](https://github.com/mjstrasser/wiremock-async).
 
 # WireMock configuration
 
-[WireMock in standalone mode](https://wiremock.org/docs/running-standalone/) can be configured with mappings 
-specified in JSON. Here is one for the asynchronous API:
+[WireMock in standalone mode](https://wiremock.org/docs/running-standalone/) is usually configured with mappings 
+specified in JSON. Here is an example mapping for the asynchronous API:
 
 ```json
 {
@@ -44,12 +44,12 @@ specified in JSON. Here is one for the asynchronous API:
 This mapping:
 
 - Accepts POST requests to the URI `/contract/action`.
-- Calls the transformer with name `DelayedCallback` to transform the response.
+- Transforms the response using a transformer with name `DelayedCallback`.
 - Specifies parameters `median` and `sigma` for the transformer.
 
 # Contract
 
-The asynchronous APIs follow a contract that includes a payload and a callback URL. In Kotlin:
+The asynchronous APIs follow a contract that includes a payload and a callback URL. Here is a simplified version:
 
 ```kotlin
 data class ContractRequest(
@@ -78,8 +78,9 @@ class DelayedCallback : ResponseTransformer() {
         val objectMapper = jacksonObjectMapper()
     }
 
+    // Identify this transformer in mapping specifications.
     override fun getName() = "DelayedCallback"
-
+    // Only apply the transformer when specified.
     override fun applyGlobally() = false
 
     override fun transform(request: Request, response: Response, files: FileSource, parameters: Parameters): Response {
@@ -90,23 +91,22 @@ class DelayedCallback : ResponseTransformer() {
         } catch (ex: Exception) {
            logger.error("Exception reading contract request", ex)
            return Response.Builder.like(response)
-              .status(400)
-              .body(ex.message)
-              .build()
+               .status(400)
+               .body(ex.message)
+               .build()
         }
+
         // 2
-        val context = CallbackContext(contractRequest)
+        val delayMillis = callbackDelayMillis(parameters)
 
         // 3
-        val delayMillis = callbackDelayMillis(parameters)
-        // 4
-        executor.schedule({ context.callback() }, delayMillis, TimeUnit.MILLISECONDS)
+        executor.schedule({ contractRequest.callback() }, delayMillis, TimeUnit.MILLISECONDS)
 
+        // 4
         val result = ContractResponse(
-            context.callbackId,
-            "Acknowledged the request. Will call back after $delayMillis ms"
+            contractRequest.correlationId,
+            "Acknowledged the request. Will call back after $delayMillis ms",
         )
-        // 5
         return Response.Builder.like(response)
             .status(200)
             .body(objectMapper.writeValueAsString(result))
@@ -126,43 +126,31 @@ class DelayedCallback : ResponseTransformer() {
 }
 ```
 
-- The string returned by `getName()` is used to identify the transformer in mapping specifications.
-
-- `applyGlobally()` must be `false` so the transformer is only used for mappings where it is explicitly specified.
-
 ## The `transform` function
 
-1. It reads the `ContractRequest` value from the incoming request.
+1. Reads the `ContractRequest` value from the incoming request.
 
-2. Constructs a `CallbackContext` object from the contract request. It is defined in Kotlin:
-   ```kotlin
-   data class CallbackContext(
-       val contractRequest: ContractRequest,
-       val callbackId: String = UUID.randomUUID().toString()
-   )
-   ```
-
-3. Calculates the callback delay in milliseconds from a lognormal distribution using the supplied parameters and the
+2. Calculates the callback delay in milliseconds from a lognormal distribution using the supplied parameters and the
    simple default of fixed, 1-second delay. See below for information about reading double parameter values.
 
-4. Schedules the callback function using the executor service.
+3. Schedules the callback function using the executor service.
 
-5. Returns a contract response.
+4. Returns a contract response with the specified `correlationId`.
 
 ## The callback function
 
-This function is defined as an extension on the `CallbackContext` class. It uses the
+This function is defined as an extension on `ContractRequest`. It uses the
 [OkHttp](https://square.github.io/okhttp/) client from the library already present in WireMock
-and sends another `ContractResponse` object.
+and sends another `ContractResponse` object with the same `correlationId`.
 
 ```kotlin
-fun CallbackContext.callback() {
+fun ContractRequest.callback() {
 
     val okClient = OkHttpClient()
 
-    val body = objectMapper.writeValueAsString(ContractResponse(callbackId, "All processing complete"))
+    val body = objectMapper.writeValueAsString(ContractResponse(correlationId, "All processing complete"))
     val request = Request.Builder()
-        .url(contractRequest.callbackUrl)
+        .url(callbackUrl)
         .post(body.toRequestBody("application/json".toMediaType()))
         .build()
 
@@ -210,10 +198,13 @@ tasks.register<Jar>("uberJar") {
 }
 ```
 
-The command-line to start it becomes:
+The command line to start it becomes:
 
 ```shell
 java -cp wiremock-async-uber.jar \
   com.github.tomakehurst.wiremock.standalone.WireMockServerRunner \
   --extensions mjs.wiremock.DelayedCallback
 ```
+
+- The main class must be specified explicitly.
+- WireMock is passed a comma-separated list of extension class names.
