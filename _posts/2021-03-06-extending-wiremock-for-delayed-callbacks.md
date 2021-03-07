@@ -206,5 +206,5 @@ java -cp wiremock-async-uber.jar \
   --extensions mjs.wiremock.DelayedCallback
 ```
 
-- The main class must be specified explicitly.
+- The main class needs to be specified explicitly.
 - WireMock is passed a comma-separated list of extension class names.
