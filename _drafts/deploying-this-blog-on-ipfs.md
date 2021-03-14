@@ -5,30 +5,25 @@ categories: tech
 tags: blog ipfs
 ---
 
-I have been experimenting with deploying this blog on the [Interplanetary Filesystem,
-IPFS](https://ipfs.io) as well as its usual address.
+I have been experimenting with deploying this blog on the [Interplanetary Filesystem
+(IPFS)](https://ipfs.io) as well as its usual address.
 
 # IPFS
 
-With IPFS, resources are identified by their contents, not their locations. This means
-a new ‘version’ of a page or blog is identified differently because its contents
-have changed.
+With IPFS, resources are addressed by their contents, not their locations. This means a new version
+of a page or blog is addressed differently because its contents have changed.
 
-For example, two versions of the home page of this blog (`/index.html`) have two identities:
+For example, two versions of the home page of this blog (`/index.html`) have two [content
+identifiers (CIDs)](https://docs.ipfs.io/concepts/content-addressing/):
 
-- `QmTUNULbQQ5wbZWxpXe2WNt93DdkiHxcN18Trk1LEGJBrd` for the version published from Git
-  hash `2fc9428e291803f7f06994a4de6adcace2f1afee` on 21 February 2021. 
+- `QmTUNULbQQ5wbZWxpXe2WNt93DdkiHxcN18Trk1LEGJBrd` for the version published from Git hash 
+  [2fc9428](https://github.com/mjstrasser/mjstrasser.github.io/tree/6b494eaf9cd4908f42908365014d2d6d3b28c24b) on 21 February 2021. 
   
-- `QmXce8twurwMLdL85hXQQ3vQFJVLMg2fqNFSxmGsz5qp3t` for the version published from Git
-  hash `7143480932428a8d7b38ccadf9590caa446e5d12` on 7 March 2021.
-
-## IPFS hash encodings
-
-The common, compact encoding of hashes is [base-58](https://en.wikipedia.org/wiki/base58), like
-those shown above. This encoding is not URL-safe so there is a base-32 alternative.
-
-The base-58 encoding `QmXce8twurwMLdL85hXQQ3vQFJVLMg2fqNFSxmGsz5qp3t` can be converted into the
-base-32 encoding `bafybeiej2hj64mw6derjjhp6mqzppru4ouwrnsay2leru6qubtsf5ewsum`.
+- `QmXce8twurwMLdL85hXQQ3vQFJVLMg2fqNFSxmGsz5qp3t` for the version published from Git hash
+  [7143480](https://github.com/mjstrasser/mjstrasser.github.io/tree/7143480932428a8d7b38ccadf9590caa446e5d12) on 7 March 2021.
+  
+These CIDs are expressed in base58 encoding; there is a range of other
+formats and encodings.
 
 ## Finding resources
 
@@ -44,8 +39,8 @@ version:
 
 - [https://floral-glade-5684.on.fleek.co](https://floral-glade-5684.on.fleek.co)
 
-- [ipns://blog.michaelstrasser.com](ipns://blog.michaelstrasser.com) (only in browsers that
-  support IPFS)
+- [ipns://blog.michaelstrasser.com](ipns://blog.michaelstrasser.com), an address that
+  is only resolved by browsers that support IPFS, either natively or via extensions.
 
 # Does it work?
 
