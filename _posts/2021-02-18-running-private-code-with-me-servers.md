@@ -55,7 +55,7 @@ administration guide](https://jetbrains.com/help/cwm/code-with-me-administration
 ```dockerfile
 FROM debian:buster-slim
 
-ARG DISTRIBUTION_VERSION=1296
+ARG DISTRIBUTION_VERSION=1400
 ADD lobby-server-linux-x64.${DISTRIBUTION_VERSION}.tar.gz /home/lobby-server
 
 RUN apt-get update && apt-get install -y unzip net-tools procps && apt-get clean
